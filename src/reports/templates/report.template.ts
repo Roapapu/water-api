@@ -3,7 +3,10 @@ import { CreateReportDto } from '../dto/create-report.dto.js';
 /**
  * Genera un template HTML tabular y presentable para las alertas de fuga de agua.
  */
-export function generateReportTemplate(dto: CreateReportDto): string {
+export function generateReportTemplate(dto: CreateReportDto, photoUrl: string): string {
+  const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[char]!);
   const severityColors: Record<string, string> = {
     LOW: '#5cb85c',
     MEDIUM: '#f0ad4e',
@@ -27,15 +30,19 @@ export function generateReportTemplate(dto: CreateReportDto): string {
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <tr style="background-color: #e9ecef;">
             <td style="padding: 12px; border: 1px solid #dee2e6; font-weight: bold; width: 35%;">📌 Título</td>
-            <td style="padding: 12px; border: 1px solid #dee2e6;">${dto.title}</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">${escapeHtml(dto.title)}</td>
           </tr>
           <tr>
             <td style="padding: 12px; border: 1px solid #dee2e6; font-weight: bold;">📍 Ubicación</td>
-            <td style="padding: 12px; border: 1px solid #dee2e6;">${dto.location}</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">${escapeHtml(dto.location)}</td>
           </tr>
           <tr style="background-color: #e9ecef;">
             <td style="padding: 12px; border: 1px solid #dee2e6; font-weight: bold;">📝 Descripción</td>
-            <td style="padding: 12px; border: 1px solid #dee2e6;">${dto.description}</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">${escapeHtml(dto.description)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border: 1px solid #dee2e6; font-weight: bold;">Teléfono</td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">${escapeHtml(dto.phone ?? 'No proporcionado')}</td>
           </tr>
           <tr>
             <td style="padding: 12px; border: 1px solid #dee2e6; font-weight: bold;">⚠️ Severidad</td>
@@ -50,6 +57,8 @@ export function generateReportTemplate(dto: CreateReportDto): string {
             <td style="padding: 12px; border: 1px solid #dee2e6;">${new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}</td>
           </tr>
         </table>
+
+        <img src="${escapeHtml(photoUrl)}" alt="Evidencia fotografica de la fuga" width="560" style="display: block; width: 100%; max-width: 560px; height: auto; border-radius: 8px;" />
 
         <p style="color: #555;">Por favor, revisa el sistema para más detalles y toma las acciones correspondientes.</p>
       </div>

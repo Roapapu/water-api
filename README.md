@@ -1,114 +1,117 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# AguaFix API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API NestJS de reportes de fugas con PostgreSQL, fotos en Amazon S3 y alertas por correo.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Entregables
 
-## Description
+- Git: https://github.com/Roapapu/water-api
+- Docker Hub: https://hub.docker.com/r/roapadilla/aquafix-api
+- Imagen: `roapadilla/aquafix-api:latest`
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Configuración local
 
-## Project setup
+Conserva tu `.env` existente. Para una instalación nueva copia `.env.example` a `.env` y completa sus valores.
+No subas `.env` a Git. Las credenciales se inyectan al ejecutar el contenedor y no se usan para construir la imagen.
 
-```bash
-$ npm install
+```powershell
+npm ci
+npm run migration:run
+npm run start:dev
 ```
 
-## Compile and run the project
+Se mantiene `synchronize: false`. La nueva migración añade `photoUrl`, `repairPhotoUrl` y `phone` como columnas nullable para conservar reportes anteriores. El POST exige foto para todos los reportes nuevos. `repairPhotoUrl` queda en null hasta que exista un flujo de reparación; esta entrega no agrega un endpoint de reparación.
 
-```bash
-# development
-$ npm run start
+## S3
 
-# watch mode
-$ npm run start:dev
+- Región: `us-east-1`.
+- Bucket: `aqua-fix-reports-roa-2026`.
+- Prefijo: `reports/`.
+- Variables: `AWS_REGION`, `AWS_S3_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+- El usuario de la API necesita `s3:PutObject` sobre `arn:aws:s3:::aqua-fix-reports-roa-2026/reports/*`.
+- La política del bucket concede `s3:GetObject` público únicamente sobre ese prefijo.
+- Mantén ACL deshabilitadas. La API no envía ACL en la subida.
 
-# production mode
-$ npm run start:prod
+## Probar con Bruno
+
+Abre la colección con **Open Collection** y selecciona la carpeta `bruno` de este repositorio. Elige el entorno **Local**. Las solicitudes ya tienen los campos y pruebas preparados; selecciona una foto real en el campo `photo` de la solicitud 02.
+
+Usa el puerto de `PORT` en tu `.env`. En POST `/reports`, elige Body → Multipart Form:
+
+| Campo | Tipo | Ejemplo |
+| --- | --- | --- |
+| title | Text | Fuga en vía pública |
+| location | Text | Calle 10, esquina con avenida Central |
+| description | Text | Sale agua de una tubería junto a la banqueta |
+| severity | Text | HIGH |
+| phone | Text | 5551234567 |
+| photo | File | Selecciona una foto JPEG, PNG o WebP |
+
+No agregues manualmente el encabezado Content-Type: Bruno genera el boundary multipart.
+La foto es obligatoria y tiene un límite de 5 MB. Severity es opcional, con valor predeterminado MEDIUM; phone es opcional para conservar compatibilidad con los campos del primer parcial.
+
+- POST exitoso: 201, reporte con `photoUrl`.
+- POST sin foto: 400.
+- Archivo que no es una imagen permitida: 400.
+- Foto mayor al límite: 413 (límite del interceptor).
+- GET `/reports`: incluye `photoUrl` y `repairPhotoUrl`.
+- El correo incluye ubicación, descripción, severidad, teléfono e imagen de S3 con `<img>`.
+
+El envío de correo mantiene el comportamiento previo: si SMTP falla, el reporte permanece guardado. Revisa el correo recibido para validar la entrega; una respuesta 201 por sí sola no confirma recepción del correo.
+
+## Docker Compose
+
+El compose usa la imagen publicada en Docker Hub, conserva el volumen `postgres_data` y mantiene el servicio `db` y el contenedor `water_reports_db` de la versión anterior. Ejecuta los comandos desde la misma carpeta y con el mismo nombre de proyecto de Compose para conservar el volumen existente.
+
+```powershell
+docker compose pull
+docker compose up -d
+docker compose ps -a
+docker compose logs migrate
+docker compose logs api
 ```
 
-## Run tests
+El servicio `migrate` aplica las migraciones compiladas después de que PostgreSQL esté listo. La API inicia cuando la migración termina correctamente. Dentro de Docker, DB_HOST y DB_PORT se ajustan a `db:5432`; tu `.env` local puede conservar localhost y el puerto 5433.
+No ejecutes `docker compose down -v`: elimina los datos del volumen.
 
-```bash
-# unit tests
-$ npm run test
+Para construir y probar localmente antes de publicar:
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```powershell
+docker build -t roapadilla/aquafix-api:latest .
+docker compose up -d --pull never
 ```
 
-## Deployment
+El Dockerfile usa node:22-alpine en ambas etapas y ejecuta `node dist/main` como usuario node. `.dockerignore` excluye `.env`, variantes de entorno, los archivos compose, node_modules, dist y .git. La imagen final solo recibe package.json, dependencias de producción y dist.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## GitHub Actions
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+En Settings → Secrets and variables → Actions → Repository secrets:
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+- `DOCKER_USER`: usuario de Docker Hub.
+- `DOCKER_PASSWORD`: token de Docker Hub con lectura y escritura.
+
+Cada push a main activa `.github/workflows/docker-publish.yml`, que inicia sesión, construye y publica `roapadilla/aquafix-api:latest`. No necesita las claves de AWS, SMTP ni base de datos para construir.
+
+## Validación
+
+```powershell
+npm run build
+npm run lint
+npm test -- test/reports.spec.ts src/storage/storage.service.spec.ts
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Las pruebas de fotos usan dobles de S3, base de datos y correo. Para la entrega también valida el flujo con los servicios reales.
+Los tests existentes de AuthController y AuthService no declaran sus dependencias en el módulo de pruebas y fallaban antes de esta integración.
 
-## Observability
+## Guion del video (orden obligatorio)
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+1. Inicia la grabación, muestra un cambio de código y revisa el diff. No muestres .env ni tokens.
+2. Haz commit y push a main de los archivos de la implementación. Revisa `git status` antes de agregar archivos y confirma que .env no esté incluido.
+3. Abre GitHub → Actions y muestra el workflow ejecutándose hasta quedar verde.
+4. Abre Docker Hub → roapadilla/aquafix-api → Tags y muestra latest con su fecha de actualización.
+5. Ejecuta `docker compose pull` y `docker compose up -d`; comprueba que la API y PostgreSQL estén activos y migrate haya terminado con código 0.
+6. En Bruno crea un reporte con foto y muestra la respuesta con photoUrl.
+7. Abre S3 → bucket → reports/ y muestra el nuevo objeto. Comprueba su URL en incógnito.
+8. Abre el correo recibido y muestra la foto visible. Si tu cliente bloquea imágenes remotas, permite mostrarlas.
+9. Puedes mostrar GET /reports y un POST sin foto que responda 400 como evidencia adicional.
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Consulta [el guion detallado de grabación](evidencias/GUIA-DE-GRABACION.md) y [el formato de entrega](evidencias/ENTREGA.md).

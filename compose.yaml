@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: water_reports_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:?Define DB_USERNAME en .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
+      POSTGRES_DB: ${DB_NAME:?Define DB_NAME en .env}
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  migrate:
+    image: roapadilla/aquafix-api:latest
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    command: ["node", "node_modules/typeorm/cli.js", "migration:run", "-d", "dist/config/typeorm.config.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    image: roapadilla/aquafix-api:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - "${PORT:?Define PORT en .env}:${PORT}"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data:

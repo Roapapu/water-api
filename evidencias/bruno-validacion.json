@@ -1,0 +1,307 @@
+[
+  {
+    "iterationIndex": 0,
+    "results": [
+      {
+        "test": {
+          "filename": "01 API disponible.bru"
+        },
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:3000/",
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "bruno-runtime/4.3.0",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Host": "localhost:3000",
+            "Connection": "keep-alive",
+            "content-type": null
+          }
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "headers": {
+            "x-powered-by": "Express",
+            "content-type": "text/html; charset=utf-8",
+            "content-length": "12",
+            "etag": "W/\"c-Lve95gjOVATpfV8EL5X4nxwjKHE\"",
+            "date": "Sat, 24 Oct 2026 03:46:34 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=5"
+          },
+          "url": "http://localhost/",
+          "responseTime": 44,
+          "duration": 44,
+          "size": 12
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [
+          {
+            "description": "API disponible: 200",
+            "status": "pass",
+            "uid": "nOyyr5HTX1Y0FXo1-oojF"
+          }
+        ],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.5145005,
+        "name": "01 API disponible",
+        "suitename": "C:\\Users\\Roa\\water-reports-api\\bruno\\01 API disponible",
+        "path": "01 API disponible",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "02 Crear reporte con foto.bru"
+        },
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:3000/reports",
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "bruno-runtime/4.3.0",
+            "Content-Length": "76671",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Host": "localhost:3000",
+            "Connection": "keep-alive",
+            "content-type": "multipart/form-data; boundary=--------------------------47abaf25c27b12d662df7fe5"
+          },
+          "data": {
+            "_overheadLength": 684,
+            "_valueLength": 173,
+            "_valuesToMeasure": [
+              {
+                "fd": null,
+                "path": "C:\\Users\\Roa\\water-reports-api\\bruno\\fotos\\fuga.jpeg",
+                "flags": "r",
+                "mode": 438,
+                "end": null,
+                "bytesRead": 75758,
+                "_events": {},
+                "_readableState": {
+                  "highWaterMark": 65536,
+                  "buffer": [],
+                  "bufferIndex": 0,
+                  "length": 0,
+                  "pipes": [],
+                  "awaitDrainWriters": null
+                },
+                "_eventsCount": 2
+              }
+            ],
+            "writable": false,
+            "readable": true,
+            "dataSize": 0,
+            "maxDataSize": 2097152,
+            "pauseStreams": true,
+            "_released": true,
+            "_streams": [],
+            "_currentStream": null,
+            "_insideLoop": false,
+            "_pendingNext": false,
+            "_boundary": "--------------------------47abaf25c27b12d662df7fe5",
+            "_events": {},
+            "_eventsCount": 3
+          }
+        },
+        "response": {
+          "status": 201,
+          "statusText": "Created",
+          "headers": {
+            "x-powered-by": "Express",
+            "content-type": "application/json; charset=utf-8",
+            "content-length": "470",
+            "etag": "W/\"1d6-a3ANALgcaADdys2MOfX5lpnkzxM\"",
+            "date": "Sat, 24 Oct 2026 03:46:40 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=5"
+          },
+          "url": "http://localhost/reports",
+          "responseTime": 5590,
+          "duration": 5590,
+          "size": 470
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [
+          {
+            "description": "Reporte creado: 201",
+            "status": "pass",
+            "uid": "PiI1NRyj_68x9qMxbut53"
+          },
+          {
+            "description": "Foto guardada en el bucket y prefijo correctos",
+            "status": "pass",
+            "uid": "gnLw6PbqzULG9D__ku6AV"
+          },
+          {
+            "description": "Incluye repairPhotoUrl y telefono",
+            "status": "pass",
+            "uid": "onec4wShvZp6Kdor304bp"
+          }
+        ],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 5.8189489,
+        "name": "02 Crear reporte con foto",
+        "suitename": "C:\\Users\\Roa\\water-reports-api\\bruno\\02 Crear reporte con foto",
+        "path": "02 Crear reporte con foto",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "03 Listar reportes.bru"
+        },
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:3000/reports",
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "bruno-runtime/4.3.0",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Host": "localhost:3000",
+            "Connection": "keep-alive",
+            "content-type": null
+          }
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "headers": {
+            "x-powered-by": "Express",
+            "content-type": "application/json; charset=utf-8",
+            "content-length": "1556",
+            "etag": "W/\"614-PBVc71AKhlJhcJE3XbOrkQG96yI\"",
+            "date": "Sat, 24 Oct 2026 03:46:40 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=5"
+          },
+          "url": "http://localhost/reports",
+          "responseTime": 16,
+          "duration": 16,
+          "size": 1556
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [
+          {
+            "description": "Listado: 200",
+            "status": "pass",
+            "uid": "PpKxlh2t9EXNl1GLXCflY"
+          },
+          {
+            "description": "Todos los reportes incluyen las dos URLs",
+            "status": "pass",
+            "uid": "r74FeLyZe6QBParntqCOH"
+          }
+        ],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.238521,
+        "name": "03 Listar reportes",
+        "suitename": "C:\\Users\\Roa\\water-reports-api\\bruno\\03 Listar reportes",
+        "path": "03 Listar reportes",
+        "iterationIndex": 0
+      },
+      {
+        "test": {
+          "filename": "04 Rechazar reporte sin foto.bru"
+        },
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:3000/reports",
+          "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "bruno-runtime/4.3.0",
+            "Content-Length": "710",
+            "Accept-Encoding": "gzip, compress, deflate, br",
+            "Host": "localhost:3000",
+            "Connection": "keep-alive",
+            "content-type": "multipart/form-data; boundary=--------------------------03dd618e57b85885338d2627"
+          },
+          "data": {
+            "_overheadLength": 532,
+            "_valueLength": 122,
+            "_valuesToMeasure": [],
+            "writable": false,
+            "readable": true,
+            "dataSize": 0,
+            "maxDataSize": 2097152,
+            "pauseStreams": true,
+            "_released": true,
+            "_streams": [],
+            "_currentStream": null,
+            "_insideLoop": false,
+            "_pendingNext": false,
+            "_boundary": "--------------------------03dd618e57b85885338d2627",
+            "_events": {},
+            "_eventsCount": 3
+          }
+        },
+        "response": {
+          "status": 400,
+          "statusText": "Bad Request",
+          "headers": {
+            "x-powered-by": "Express",
+            "content-type": "application/json; charset=utf-8",
+            "content-length": "69",
+            "etag": "W/\"45-n2wEOFSPaRXrrZKGxunspLkk4n4\"",
+            "date": "Sat, 24 Oct 2026 03:46:41 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=5"
+          },
+          "url": "http://localhost/reports",
+          "responseTime": 14,
+          "duration": 14,
+          "size": 69
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [
+          {
+            "description": "Sin photo: 400 Bad Request",
+            "status": "pass",
+            "uid": "3ymlWKB3_Px-DLyU2ffCA"
+          }
+        ],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.2364338,
+        "name": "04 Rechazar reporte sin foto",
+        "suitename": "C:\\Users\\Roa\\water-reports-api\\bruno\\04 Rechazar reporte sin foto",
+        "path": "04 Rechazar reporte sin foto",
+        "iterationIndex": 0
+      }
+    ],
+    "summary": {
+      "totalRequests": 4,
+      "passedRequests": 4,
+      "failedRequests": 0,
+      "errorRequests": 0,
+      "skippedRequests": 0,
+      "skippedByBail": 0,
+      "totalAssertions": 0,
+      "passedAssertions": 0,
+      "failedAssertions": 0,
+      "totalTests": 7,
+      "passedTests": 7,
+      "failedTests": 0,
+      "totalPreRequestTests": 0,
+      "passedPreRequestTests": 0,
+      "failedPreRequestTests": 0,
+      "totalPostResponseTests": 0,
+      "passedPostResponseTests": 0,
+      "failedPostResponseTests": 0
+    }
+  }
+]

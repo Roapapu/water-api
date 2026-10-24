@@ -1,0 +1,41 @@
+meta {
+  name: 02 Crear reporte con foto
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/reports
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  title: Evidencia AguaFix - fuga en Calle Central
+  location: Calle Central 123, esquina con avenida Norte
+  description: Se observa una fuga de agua junto a la banqueta y acumulacion en la calle.
+  severity: HIGH
+  phone: 5551234567
+  photo: @file(./fotos/fuga.jpeg)
+}
+
+tests {
+  test("Reporte creado: 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("Foto guardada en el bucket y prefijo correctos", function () {
+    expect(res.getBody().photoUrl).to.match(/^https:\/\/aqua-fix-reports-roa-2026\.s3\.us-east-1\.amazonaws\.com\/reports\//);
+  });
+  test("Incluye repairPhotoUrl y telefono", function () {
+    expect(res.getBody()).to.have.property("repairPhotoUrl", null);
+    expect(res.getBody().phone).to.equal("5551234567");
+  });
+}
+
+docs {
+  Antes de enviar, abre Body > Multipart Form y selecciona tu foto en el campo photo.
+  Alternativa: coloca una foto JPEG real en bruno/fotos/fuga.jpeg.
+  No establezcas manualmente Content-Type; Bruno genera el boundary.
+  Este POST crea un reporte real, sube una foto a S3 y envia correo al destinatario configurado.
+  Muestra la respuesta 201 y copia photoUrl para verificar el mismo objeto en S3 y en el correo.
+}

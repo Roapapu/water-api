@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "AguaFix - Evidencias",
+  "type": "collection",
+  "ignore": ["node_modules", ".git", "fotos"]
+}

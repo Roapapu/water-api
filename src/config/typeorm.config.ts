@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
+import { fileURLToPath } from 'node:url';
 import { User } from '../auth/entities/user.entity.js';
 import { WaterReport } from '../reports/entities/water-report.entity.js';
 
@@ -15,6 +16,6 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [User, WaterReport], // <-- Importadas explícitamente
-  migrations: ['src/migrations/*.ts'],
+  migrations: [fileURLToPath(new URL('../migrations/*{.ts,.js}', import.meta.url))],
   synchronize: false,
 });

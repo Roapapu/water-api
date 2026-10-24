@@ -14,6 +14,11 @@ export class CreateReportDto {
   @IsNotEmpty({ message: 'La descripción es obligatoria' })
   description: string;
 
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  phone?: string;
+
   @IsEnum(ReportSeverity, { message: 'La severidad debe ser LOW, MEDIUM, HIGH o CRITICAL' })
   @IsOptional()
   severity?: ReportSeverity;

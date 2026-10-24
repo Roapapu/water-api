@@ -27,6 +27,15 @@ export class WaterReport {
   @Column({ type: 'text' })
   description: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  phone: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  photoUrl: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  repairPhotoUrl: string | null;
+
   @Column({
     type: 'enum',
     enum: ReportSeverity,

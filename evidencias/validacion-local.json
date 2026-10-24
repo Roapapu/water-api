@@ -1,0 +1,69 @@
+{
+  "generatedAtUtc": "2026-10-24T03:48:16.175Z",
+  "generatedAtMexicoCity": "23/10/2026, 9:48:16 p.m.",
+  "scope": "Validacion local real. No acredita por si sola publicacion en GitHub Actions, Docker Hub ni recepcion del correo.",
+  "baseUrl": "http://localhost:3000",
+  "git": {
+    "head": "4322a411df24e1311675855326e0a590cdbf8531",
+    "branch": "main",
+    "pendingChanges": true,
+    "envTracked": false,
+    "envIgnored": true
+  },
+  "checks": {
+    "health": 200,
+    "getReports": 200,
+    "reportCount": 4,
+    "bothPhotoFieldsPresent": true,
+    "missingPhoto": 400,
+    "publicPhoto": {
+      "status": 200,
+      "verified": true,
+      "error": null
+    }
+  },
+  "pendingChecks": [],
+  "sample": {
+    "reportId": 4,
+    "photoUrl": "https://aqua-fix-reports-roa-2026.s3.us-east-1.amazonaws.com/reports/6e6aef69-c502-4d14-bed3-eec224cac2e8.jpg"
+  },
+  "docker": {
+    "image": "roapadilla/aquafix-api:latest",
+    "imageId": "sha256:423c62ab5e8f3daba78c86f6ae014b5ff0d7aa3f960c316fe3f63913e7b2930b",
+    "forbiddenFilesFound": [],
+    "uid": 1000,
+    "embeddedCredentialKeys": [],
+    "composeStatus": [
+      {
+        "service": "api",
+        "name": "water-reports-api-api-1",
+        "image": "roapadilla/aquafix-api:latest",
+        "state": "running",
+        "status": "Up 8 minutes",
+        "health": "",
+        "exitCode": 0,
+        "ports": "0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp"
+      },
+      {
+        "service": "migrate",
+        "name": "water-reports-api-migrate-1",
+        "image": "roapadilla/aquafix-api:latest",
+        "state": "exited",
+        "status": "Exited (0) 8 minutes ago",
+        "health": "",
+        "exitCode": 0,
+        "ports": ""
+      },
+      {
+        "service": "db",
+        "name": "water_reports_db",
+        "image": "postgres:15-alpine",
+        "state": "running",
+        "status": "Up 8 minutes (healthy)",
+        "health": "healthy",
+        "exitCode": 0,
+        "ports": "0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp"
+      }
+    ]
+  }
+}

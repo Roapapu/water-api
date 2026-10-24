@@ -1,0 +1,24 @@
+meta {
+  name: 03 Listar reportes
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/reports
+  body: none
+  auth: none
+}
+
+tests {
+  test("Listado: 200", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody()).to.be.an("array");
+  });
+  test("Todos los reportes incluyen las dos URLs", function () {
+    res.getBody().forEach(function (report) {
+      expect(report).to.have.property("photoUrl");
+      expect(report).to.have.property("repairPhotoUrl");
+    });
+  });
+}

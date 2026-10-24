@@ -5,6 +5,8 @@ config();
 
 export const envs = {
   PORT: env.get('PORT').required().asPortNumber(),
+  AWS_REGION: env.get('AWS_REGION').required().asString(),
+  AWS_S3_BUCKET: env.get('AWS_S3_BUCKET').required().asString(),
   
   // Base de datos
   DB_HOST: env.get('DB_HOST').required().asString(),
